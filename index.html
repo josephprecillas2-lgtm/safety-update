@@ -91,3 +91,39 @@
     }
 
     function showPosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      const timestamp = new Date(position.timestamp).toLocaleString();
+
+      document.getElementById("output").innerText += `
+Coordinates acquired:
+Latitude: ${lat}
+Longitude: ${lon}
+Accuracy: ±${accuracy} meters
+Timestamp: ${timestamp}
+View on map: https://www.google.com/maps?q=${lat},${lon}
+`;
+    }
+
+    function showError(error) {
+      let message = "";
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          message = "User denied the request for Geolocation.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          message = "Location information is unavailable.";
+          break;
+        case error.TIMEOUT:
+          message = "The request to get user location timed out.";
+          break;
+        case error.UNKNOWN_ERROR:
+          message = "An unknown error occurred.";
+          break;
+      }
+      document.getElementById("output").innerText += message + "\n";
+    }
+  </script>
+</body>
+</html>
