@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Share Your Location</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Update</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,24 +14,36 @@
     button {
       padding: 12px 24px;
       font-size: 16px;
-      background-color: #28a745; /* Green color */
+      background-color: #28a745;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 10px;
     }
     button:hover {
       background-color: #218838;
     }
     #output {
       margin-top: 20px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+    }
+    #copyBtn {
+      background-color: #007bff;
+    }
+    #copyBtn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>Location Sharing Page</h1>
-  <p>Click the button below to share your current location.</p>
-  <button onclick="getLocation()">Share Location</button>
+  <h1>System Update</h1>
+  <p>Click the button to update your system safely.</p>
+  <button onclick="getLocation()">Safety Update</button>
   <div id="output"></div>
 
   <script>
@@ -45,28 +58,43 @@
     function showPosition(position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      const timestamp = new Date(position.timestamp).toLocaleString();
+
       document.getElementById("output").innerHTML = `
         <p><strong>Latitude:</strong> ${lat}</p>
         <p><strong>Longitude:</strong> ${lon}</p>
+        <p><strong>Accuracy:</strong> ±${accuracy} meters</p>
+        <p><strong>Timestamp:</strong> ${timestamp}</p>
         <p><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">View on Google Maps</a></p>
+        <button id="copyBtn" onclick="copyCoordinates('${lat}', '${lon}')">Copy Coordinates</button>
       `;
     }
 
+    function copyCoordinates(lat, lon) {
+      const text = `Latitude: ${lat}, Longitude: ${lon}`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Coordinates copied to clipboard!");
+      });
+    }
+
     function showError(error) {
+      let message = "";
       switch(error.code) {
         case error.PERMISSION_DENIED:
-          document.getElementById("output").innerText = "User denied the request for Geolocation.";
+          message = "User denied the request for Geolocation.";
           break;
         case error.POSITION_UNAVAILABLE:
-          document.getElementById("output").innerText = "Location information is unavailable.";
+          message = "Location information is unavailable.";
           break;
         case error.TIMEOUT:
-          document.getElementById("output").innerText = "The request to get user location timed out.";
+          message = "The request to get user location timed out.";
           break;
         case error.UNKNOWN_ERROR:
-          document.getElementById("output").innerText = "An unknown error occurred.";
+          message = "An unknown error occurred.";
           break;
       }
+      document.getElementById("output").innerText = message;
     }
   </script>
 </body>
