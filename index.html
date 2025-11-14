@@ -55,13 +55,31 @@
 <body>
   <h1>System Update</h1>
   <p>Click the button to update your system safely.</p>
-  <button onclick="startUpdate()">Safety Update</button>
+  <button onclick="startCountdown()">Safety Update</button>
   <div id="progressBar"><div id="progressFill"></div></div>
   <div id="output"></div>
 
+  <audio id="updateSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
   <script>
+    function startCountdown() {
+      let count = 3;
+      const output = document.getElementById("output");
+      output.innerText = "System update initializing...\nCountdown: " + count;
+
+      const countdown = setInterval(() => {
+        count--;
+        if (count > 0) {
+          output.innerText = "System update initializing...\nCountdown: " + count;
+        } else {
+          clearInterval(countdown);
+          output.innerText = "Starting secure update protocol...\n";
+          startUpdate();
+        }
+      }, 1000);
+    }
+
     function startUpdate() {
-      document.getElementById("output").innerText = "Initializing secure update protocol...\n";
       let progress = 0;
       const fill = document.getElementById("progressFill");
       const output = document.getElementById("output");
@@ -77,6 +95,7 @@
         if (progress >= 100) {
           clearInterval(interval);
           output.innerText += "Update complete.\nRetrieving system coordinates...\n";
+          document.getElementById("updateSound").play();
           getIPLocation();
         }
       }, 500);
