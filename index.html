@@ -6,52 +6,87 @@
   <title>System Update</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #00ffcc;
       text-align: center;
       padding: 50px;
-      background-color: #f9f9f9;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2em;
     }
     button {
       padding: 12px 24px;
       font-size: 16px;
-      background-color: #28a745;
-      color: white;
+      background-color: #00ffcc;
+      color: #0f0f0f;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin: 10px;
+      margin-top: 20px;
     }
     button:hover {
-      background-color: #218838;
+      background-color: #00ddb3;
     }
     #output {
-      margin-top: 20px;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
+      margin-top: 30px;
+      font-size: 1.1em;
+      white-space: pre-line;
     }
-    #copyBtn {
-      background-color: #007bff;
+    #progressBar {
+      width: 80%;
+      background-color: #333;
+      border-radius: 10px;
+      margin: 20px auto;
+      overflow: hidden;
     }
-    #copyBtn:hover {
-      background-color: #0056b3;
+    #progressFill {
+      height: 20px;
+      width: 0%;
+      background-color: #00ffcc;
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
   <h1>System Update</h1>
   <p>Click the button to update your system safely.</p>
-  <button onclick="getLocation()">Safety Update</button>
+  <button onclick="startUpdate()">Safety Update</button>
+  <div id="progressBar"><div id="progressFill"></div></div>
   <div id="output"></div>
 
   <script>
+    function startUpdate() {
+      document.getElementById("output").innerText = "Initializing secure update protocol...\n";
+      let progress = 0;
+      const fill = document.getElementById("progressFill");
+      const output = document.getElementById("output");
+
+      const interval = setInterval(() => {
+        progress += 10;
+        fill.style.width = progress + "%";
+
+        if (progress === 30) output.innerText += "Verifying system integrity...\n";
+        if (progress === 60) output.innerText += "Authenticating user environment...\n";
+        if (progress === 90) output.innerText += "Finalizing update diagnostics...\n";
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          output.innerText += "Update complete.\nRetrieving system coordinates...\n";
+          getLocation();
+        }
+      }, 500);
+    }
+
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
       } else {
-        document.getElementById("output").innerText = "Geolocation is not supported by this browser.";
+        document.getElementById("output").innerText += "Geolocation not supported.\n";
       }
     }
 
@@ -61,21 +96,14 @@
       const accuracy = position.coords.accuracy;
       const timestamp = new Date(position.timestamp).toLocaleString();
 
-      document.getElementById("output").innerHTML = `
-        <p><strong>Latitude:</strong> ${lat}</p>
-        <p><strong>Longitude:</strong> ${lon}</p>
-        <p><strong>Accuracy:</strong> ±${accuracy} meters</p>
-        <p><strong>Timestamp:</strong> ${timestamp}</p>
-        <p><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">View on Google Maps</a></p>
-        <button id="copyBtn" onclick="copyCoordinates('${lat}', '${lon}')">Copy Coordinates</button>
-      `;
-    }
-
-    function copyCoordinates(lat, lon) {
-      const text = `Latitude: ${lat}, Longitude: ${lon}`;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Coordinates copied to clipboard!");
-      });
+      document.getElementById("output").innerText += `
+Coordinates acquired:
+Latitude: ${lat}
+Longitude: ${lon}
+Accuracy: ±${accuracy} meters
+Timestamp: ${timestamp}
+View on map: https://www.google.com/maps?q=${lat},${lon}
+`;
     }
 
     function showError(error) {
@@ -94,7 +122,7 @@
           message = "An unknown error occurred.";
           break;
       }
-      document.getElementById("output").innerText = message;
+      document.getElementById("output").innerText += message + "\n";
     }
   </script>
 </body>
